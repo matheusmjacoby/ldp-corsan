@@ -1,0 +1,1762 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LDP · CORSAN P553 · Saneamento</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0d0f14;
+  --surface: #141720;
+  --surface2: #1c2030;
+  --border: #252a3a;
+  --border2: #2f3650;
+  --accent: #3b82f6;
+  --accent2: #60a5fa;
+  --accent-dim: rgba(59,130,246,0.12);
+  --accent-dim2: rgba(59,130,246,0.06);
+  --green: #10b981;
+  --green-dim: rgba(16,185,129,0.12);
+  --yellow: #f59e0b;
+  --yellow-dim: rgba(245,158,11,0.12);
+  --red: #ef4444;
+  --red-dim: rgba(239,68,68,0.1);
+  --text: #e2e8f0;
+  --text2: #94a3b8;
+  --text3: #64748b;
+  --mono: 'IBM Plex Mono', monospace;
+  --sans: 'IBM Plex Sans', sans-serif;
+  --radius: 6px;
+  --radius2: 10px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 14px;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── GRID SCAN BACKGROUND ── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(59,130,246,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(59,130,246,0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── HEADER ── */
+header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(13,15,20,0.92);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+  padding: 0 24px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.logo {
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--accent2);
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+
+.logo span {
+  color: var(--text3);
+  font-weight: 400;
+}
+
+.nav {
+  display: flex;
+  gap: 4px;
+  flex: 1;
+  justify-content: center;
+}
+
+.nav-btn {
+  background: none;
+  border: none;
+  color: var(--text3);
+  font-family: var(--sans);
+  font-size: 13px;
+  font-weight: 500;
+  padding: 6px 14px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: all 0.15s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.nav-btn:hover { color: var(--text); background: var(--surface2); }
+.nav-btn.active { color: var(--accent2); background: var(--accent-dim); }
+
+.status-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--green);
+  box-shadow: 0 0 6px var(--green);
+  animation: pulse 2s infinite;
+}
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text3);
+}
+
+/* ── MAIN ── */
+main { position: relative; z-index: 1; padding: 24px; max-width: 1400px; margin: 0 auto; }
+
+/* ── VIEWS ── */
+.view { display: none; }
+.view.active { display: block; }
+
+/* ── SECTION TITLE ── */
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+.section-title {
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.section-title::before {
+  content: '';
+  display: inline-block;
+  width: 3px;
+  height: 14px;
+  background: var(--accent);
+  border-radius: 2px;
+}
+
+/* ── CARDS ── */
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 24px;
+}
+.stat-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius2);
+  padding: 16px 18px;
+  position: relative;
+  overflow: hidden;
+}
+.stat-card::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: var(--accent);
+  opacity: 0.6;
+}
+.stat-card:nth-child(2)::after { background: var(--green); }
+.stat-card:nth-child(3)::after { background: var(--yellow); }
+.stat-card:nth-child(4)::after { background: #a78bfa; }
+
+.stat-value {
+  font-family: var(--mono);
+  font-size: 28px;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1;
+  margin-bottom: 6px;
+}
+.stat-label {
+  font-size: 12px;
+  color: var(--text3);
+  font-weight: 400;
+}
+
+/* ── TABLE ── */
+.table-wrap {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius2);
+  overflow: hidden;
+}
+
+.table-toolbar {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.search-box {
+  flex: 1;
+  min-width: 200px;
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius);
+  padding: 7px 12px 7px 32px;
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 13px;
+  outline: none;
+  transition: border-color 0.15s;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: 10px center;
+}
+.search-box:focus { border-color: var(--accent); }
+
+.filter-select {
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius);
+  padding: 7px 10px;
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 13px;
+  outline: none;
+  cursor: pointer;
+}
+.filter-select:focus { border-color: var(--accent); }
+
+.btn {
+  background: var(--accent-dim);
+  border: 1px solid rgba(59,130,246,0.3);
+  border-radius: var(--radius);
+  color: var(--accent2);
+  font-family: var(--sans);
+  font-size: 12px;
+  font-weight: 500;
+  padding: 7px 14px;
+  cursor: pointer;
+  transition: all 0.15s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+.btn:hover { background: rgba(59,130,246,0.2); }
+.btn.green {
+  background: var(--green-dim);
+  border-color: rgba(16,185,129,0.3);
+  color: var(--green);
+}
+.btn.green:hover { background: rgba(16,185,129,0.2); }
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12.5px;
+}
+
+thead {
+  background: var(--surface2);
+  border-bottom: 1px solid var(--border);
+}
+
+th {
+  text-align: left;
+  padding: 10px 12px;
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+}
+th:hover { color: var(--text2); }
+
+td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: var(--accent-dim2); }
+
+.mono-cell {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--accent2);
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+.badge-blue { background: var(--accent-dim); color: var(--accent2); border: 1px solid rgba(59,130,246,0.2); }
+.badge-green { background: var(--green-dim); color: var(--green); border: 1px solid rgba(16,185,129,0.2); }
+.badge-yellow { background: var(--yellow-dim); color: var(--yellow); border: 1px solid rgba(245,158,11,0.2); }
+.badge-purple { background: rgba(167,139,250,0.12); color: #a78bfa; border: 1px solid rgba(167,139,250,0.2); }
+
+.table-footer {
+  padding: 10px 16px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--surface2);
+}
+.pager { display: flex; gap: 4px; align-items: center; }
+.page-btn {
+  background: none;
+  border: 1px solid var(--border2);
+  border-radius: var(--radius);
+  color: var(--text3);
+  font-family: var(--mono);
+  font-size: 11px;
+  width: 30px; height: 28px;
+  cursor: pointer;
+  transition: all 0.15s;
+  display: flex; align-items: center; justify-content: center;
+}
+.page-btn:hover, .page-btn.active { background: var(--accent-dim); color: var(--accent2); border-color: rgba(59,130,246,0.3); }
+
+/* ── FORM ── */
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+.form-grid.wide { grid-template-columns: repeat(2, 1fr); }
+.form-grid.full { grid-template-columns: 1fr; }
+
+.form-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius2);
+  padding: 20px;
+  margin-bottom: 16px;
+}
+
+.form-card-title {
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--accent2);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+label {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+input, select, textarea {
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius);
+  padding: 8px 10px;
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 13px;
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  width: 100%;
+}
+input:focus, select:focus, textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-dim);
+}
+input::placeholder { color: var(--text3); }
+select option { background: var(--surface2); }
+input[readonly] {
+  background: var(--bg);
+  color: var(--accent2);
+  font-family: var(--mono);
+  font-size: 12px;
+  cursor: default;
+  border-color: rgba(59,130,246,0.2);
+}
+
+/* ── NOMENCLATURA PREVIEW ── */
+.preview-box {
+  background: var(--bg);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius2);
+  padding: 20px;
+  margin-bottom: 16px;
+}
+
+.preview-label {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 8px;
+}
+
+.preview-value {
+  font-family: var(--mono);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--accent2);
+  word-break: break-all;
+  line-height: 1.6;
+}
+.preview-value.small { font-size: 13px; }
+.preview-value span {
+  color: var(--text3);
+  padding: 0 1px;
+}
+.preview-empty {
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--text3);
+  font-style: italic;
+}
+
+.preview-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+/* ── DOX EXPORT ── */
+.export-toolbar {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+/* ── TOAST ── */
+#toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  pointer-events: none;
+}
+.toast-msg {
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius);
+  padding: 10px 16px;
+  font-size: 13px;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  animation: slideIn 0.2s ease;
+  pointer-events: auto;
+}
+.toast-msg.success { border-color: rgba(16,185,129,0.4); color: var(--green); }
+.toast-msg.error { border-color: rgba(239,68,68,0.4); color: var(--red); }
+@keyframes slideIn { from{transform:translateX(20px);opacity:0} to{transform:translateX(0);opacity:1} }
+
+/* ── LOADING ── */
+.loading-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(13,15,20,0.7);
+  z-index: 200;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(4px);
+}
+.loading-overlay.show { display: flex; }
+.spinner {
+  width: 40px; height: 40px;
+  border: 3px solid var(--border2);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+@keyframes spin { to{transform:rotate(360deg)} }
+
+/* ── EMPTY STATE ── */
+.empty-state {
+  text-align: center;
+  padding: 48px 24px;
+  color: var(--text3);
+}
+.empty-state svg { opacity: 0.3; margin-bottom: 12px; }
+.empty-state p { font-size: 13px; }
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text3); }
+
+/* ── MODAL ── */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  z-index: 300;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(4px);
+}
+.modal-overlay.show { display: flex; }
+.modal {
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius2);
+  padding: 24px;
+  width: 90%;
+  max-width: 560px;
+  max-height: 85vh;
+  overflow-y: auto;
+}
+.modal-title {
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.modal-close {
+  background: none;
+  border: none;
+  color: var(--text3);
+  cursor: pointer;
+  font-size: 18px;
+  line-height: 1;
+  padding: 2px 6px;
+}
+.modal-close:hover { color: var(--text); }
+
+/* Action row */
+.form-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 20px;
+}
+.btn-submit {
+  background: var(--accent);
+  border: none;
+  border-radius: var(--radius);
+  color: white;
+  font-family: var(--sans);
+  font-size: 13px;
+  font-weight: 600;
+  padding: 9px 20px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.btn-submit:hover { background: var(--accent2); }
+.btn-cancel {
+  background: none;
+  border: 1px solid var(--border2);
+  border-radius: var(--radius);
+  color: var(--text3);
+  font-family: var(--sans);
+  font-size: 13px;
+  padding: 9px 16px;
+  cursor: pointer;
+}
+.btn-cancel:hover { border-color: var(--text3); color: var(--text); }
+
+/* Cols visibility toggle */
+.col-toggle-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
+.col-toggle {
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-radius: 20px;
+  padding: 4px 10px;
+  font-size: 11px;
+  color: var(--text3);
+  cursor: pointer;
+  font-family: var(--mono);
+  transition: all 0.15s;
+}
+.col-toggle.on { background: var(--accent-dim); border-color: rgba(59,130,246,0.3); color: var(--accent2); }
+
+@media (max-width: 900px) {
+  .stats-row { grid-template-columns: repeat(2,1fr); }
+  .form-grid { grid-template-columns: 1fr; }
+  .preview-grid { grid-template-columns: 1fr; }
+  .nav { gap: 2px; }
+  .nav-btn { font-size: 12px; padding: 5px 10px; }
+}
+</style>
+</head>
+<body>
+
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="spinner"></div>
+</div>
+
+<div id="toast"></div>
+
+<!-- MODAL DETALHES -->
+<div class="modal-overlay" id="detailModal">
+  <div class="modal">
+    <div class="modal-title">
+      <span>Detalhes do Índice</span>
+      <button class="modal-close" onclick="closeModal('detailModal')">✕</button>
+    </div>
+    <div id="detailContent"></div>
+  </div>
+</div>
+
+<header>
+  <div class="logo">LDP<span> · </span>P553<span> · </span>CORSAN</div>
+  <nav class="nav">
+    <button class="nav-btn active" onclick="showView('consulta')" id="nav-consulta">
+      <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+      Consultar
+    </button>
+    <button class="nav-btn" onclick="showView('cadastro')" id="nav-cadastro">
+      <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+      Novo Índice
+    </button>
+    <button class="nav-btn" onclick="showView('exportar')" id="nav-exportar">
+      <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+      Exportar DOX
+    </button>
+  </nav>
+  <div class="header-right">
+    <div class="status-dot"></div>
+    <span id="dbStatus">conectando...</span>
+  </div>
+</header>
+
+<main>
+
+<!-- ═══ VIEW: CONSULTAR ═══ -->
+<div class="view active" id="view-consulta">
+  <div class="stats-row" id="statsRow">
+    <div class="stat-card"><div class="stat-value" id="stat-total">—</div><div class="stat-label">Total de índices</div></div>
+    <div class="stat-card"><div class="stat-value" id="stat-municipios">—</div><div class="stat-label">Municípios</div></div>
+    <div class="stat-card"><div class="stat-value" id="stat-pb">—</div><div class="stat-label">Proj. Básicos</div></div>
+    <div class="stat-card"><div class="stat-value" id="stat-pe">—</div><div class="stat-label">Proj. Executivos</div></div>
+  </div>
+
+  <div class="table-wrap">
+    <div class="table-toolbar">
+      <input class="search-box" id="searchInput" placeholder="Buscar por nomenclatura, município, OS..." oninput="applyFilters()">
+      <select class="filter-select" id="filterMunicipio" onchange="applyFilters()">
+        <option value="">Todos municípios</option>
+      </select>
+      <select class="filter-select" id="filterNivel" onchange="applyFilters()">
+        <option value="">Todos os níveis</option>
+        <option>Estudo de Concepção</option>
+        <option>Anteprojeto</option>
+        <option>Projeto Básico</option>
+        <option>Projeto Executivo</option>
+      </select>
+      <select class="filter-select" id="filterAssunto" onchange="applyFilters()">
+        <option value="">Todos os assuntos</option>
+      </select>
+      <button class="btn" onclick="clearFilters()">↺ Limpar</button>
+    </div>
+
+    <div style="overflow-x:auto">
+    <table id="mainTable">
+      <thead>
+        <tr>
+          <th onclick="sortBy('os_numero')">OS</th>
+          <th onclick="sortBy('municipio')">Município</th>
+          <th onclick="sortBy('nivel_projeto')">Nível</th>
+          <th onclick="sortBy('assunto_dominante')">Assunto</th>
+          <th onclick="sortBy('tipo_documento')">Tipo Doc.</th>
+          <th onclick="sortBy('nomenclatura_corsan')">Nomenclatura CORSAN</th>
+          <th onclick="sortBy('indice_ne')">Índice NE</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody">
+        <tr><td colspan="8"><div class="empty-state"><p>Carregando dados...</p></div></td></tr>
+      </tbody>
+    </table>
+    </div>
+
+    <div class="table-footer">
+      <span id="tableInfo" style="font-family:var(--mono);font-size:11px;color:var(--text3)"></span>
+      <div class="pager" id="pager"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ VIEW: CADASTRO ═══ -->
+<div class="view" id="view-cadastro">
+  <div class="section-header">
+    <div class="section-title">Novo Índice LDP</div>
+  </div>
+
+  <!-- PREVIEW -->
+  <div class="preview-grid">
+    <div class="preview-box">
+      <div class="preview-label">Nomenclatura CORSAN</div>
+      <div id="prevCorsan" class="preview-empty">Preencha os campos abaixo</div>
+    </div>
+    <div class="preview-box">
+      <div class="preview-label">Índice NE</div>
+      <div id="prevNE" class="preview-empty">Preencha os campos abaixo</div>
+    </div>
+  </div>
+
+  <!-- FORM -->
+  <form id="ldpForm" onsubmit="submitForm(event)">
+
+    <div class="form-card">
+      <div class="form-card-title">⬡ Identificação da OS</div>
+      <div class="form-grid">
+        <div class="field">
+          <label>Ordem de Serviço *</label>
+          <select id="f_os" required onchange="onOsChange()">
+            <option value="">Selecione a OS</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Município (auto)</label>
+          <input id="f_municipio" readonly placeholder="—">
+        </div>
+        <div class="field">
+          <label>Nº do Projeto (auto)</label>
+          <input id="f_projeto" readonly placeholder="—">
+        </div>
+        <div class="field">
+          <label>Sistema (auto)</label>
+          <input id="f_sistema" readonly placeholder="—">
+        </div>
+        <div class="field">
+          <label>Data de Inclusão *</label>
+          <input type="date" id="f_data" required>
+        </div>
+        <div class="field">
+          <label>Sigla do Responsável *</label>
+          <input id="f_sigla" placeholder="Ex: BFC" maxlength="6" required oninput="this.value=this.value.toUpperCase()">
+        </div>
+      </div>
+    </div>
+
+    <div class="form-card">
+      <div class="form-card-title">⬡ Classificação do Documento</div>
+      <div class="form-grid">
+        <div class="field">
+          <label>Nível de Projeto *</label>
+          <select id="f_nivel" required onchange="updatePreview()">
+            <option value="">Selecione</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Área de Projeto CORSAN *</label>
+          <select id="f_area" required onchange="updatePreview()">
+            <option value="">Selecione</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Assunto Dominante CORSAN *</label>
+          <select id="f_assunto" required onchange="updatePreview()">
+            <option value="">Selecione</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Tipo do Documento *</label>
+          <select id="f_tipo" required onchange="onTipoChange()">
+            <option value="">Selecione</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Índice Controlado no DOX?</label>
+          <select id="f_dox">
+            <option value="sim">Sim</option>
+            <option value="nao">Não</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Padrão Antigo (anterior fev/25)?</label>
+          <select id="f_antigo">
+            <option value="nao">Não</option>
+            <option value="sim">Sim</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-card">
+      <div class="form-card-title">⬡ Numeração e Sequencial</div>
+      <div class="form-grid">
+        <div class="field">
+          <label>Nº de Pranchas CORSAN</label>
+          <input id="f_pranchas" placeholder="Ex: 01a05 (desenhos) ou 0 (demais)" oninput="updatePreview()">
+        </div>
+        <div class="field">
+          <label>Sequencial 3 — Unidade (manual)</label>
+          <input id="f_seq3" placeholder="Ex: 0, 1, 2..." oninput="updatePreview()">
+        </div>
+        <div class="field">
+          <label>Sequencial 4 — Sub-unidade (manual)</label>
+          <input id="f_seq4" placeholder="Ex: 0, 1..." oninput="updatePreview()">
+        </div>
+        <div class="field">
+          <label>Nome da Unidade (se necessário)</label>
+          <input id="f_unidade" placeholder="Ex: EEB6.1" oninput="updatePreview()">
+        </div>
+      </div>
+    </div>
+
+    <div class="form-card">
+      <div class="form-card-title">⬡ Títulos e Descrição</div>
+      <div class="form-grid">
+        <div class="field">
+          <label>Título 3 — Unidade Projetada *</label>
+          <input id="f_titulo3" placeholder="Ex: Elevatória de esgoto bruto e linha de recalque B01" required oninput="updatePreview()">
+        </div>
+        <div class="field">
+          <label>Título 4 — Conteúdo</label>
+          <input id="f_titulo4" placeholder="Ex: Planta e perfil" oninput="updatePreview()">
+        </div>
+        <div class="field">
+          <label>Complemento / Abreviatura CORSAN *</label>
+          <input id="f_complemento" placeholder="Ex: RedeCo, Quadr, Perfil, MemDes" required oninput="updatePreview()">
+        </div>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button type="button" class="btn-cancel" onclick="resetForm()">Limpar</button>
+      <button type="submit" class="btn-submit">Salvar Índice no Banco</button>
+    </div>
+
+  </form>
+</div>
+
+<!-- ═══ VIEW: EXPORTAR DOX ═══ -->
+<div class="view" id="view-exportar">
+  <div class="section-header">
+    <div class="section-title">Exportação para DOX</div>
+  </div>
+
+  <div class="export-toolbar">
+    <select class="filter-select" id="exportFilterMun" onchange="loadExportData()">
+      <option value="">Todos municípios</option>
+    </select>
+    <select class="filter-select" id="exportFilterNivel" onchange="loadExportData()">
+      <option value="">Todos os níveis</option>
+      <option>Estudo de Concepção</option>
+      <option>Projeto Básico</option>
+      <option>Projeto Executivo</option>
+    </select>
+    <input type="date" id="exportDataInicio" class="filter-select" style="width:150px" onchange="loadExportData()">
+    <input type="date" id="exportDataFim" class="filter-select" style="width:150px" onchange="loadExportData()">
+    <button class="btn green" onclick="exportCSV()">
+      <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+      Exportar CSV
+    </button>
+    <button class="btn" onclick="copyTable()">
+      <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+      Copiar Tabela
+    </button>
+  </div>
+
+  <div class="table-wrap">
+    <div style="overflow-x:auto">
+    <table id="exportTable">
+      <thead>
+        <tr>
+          <th>Linha</th>
+          <th>Description (Índice NE)</th>
+          <th>areaEmpreendimento</th>
+          <th>codigoOrigem</th>
+          <th>disciplina</th>
+          <th>tipoDocumento</th>
+          <th>folha</th>
+          <th>sequencial</th>
+          <th>formato</th>
+          <th>titulo1</th>
+          <th>titulo2</th>
+          <th>titulo3</th>
+          <th>titulo4</th>
+          <th>codigoCliente</th>
+          <th>dataInicialPrevista</th>
+          <th>dataEmissaoPrevista</th>
+        </tr>
+      </thead>
+      <tbody id="exportBody">
+        <tr><td colspan="16"><div class="empty-state"><p>Selecione os filtros e aguarde...</p></div></td></tr>
+      </tbody>
+    </table>
+    </div>
+    <div class="table-footer">
+      <span id="exportInfo" style="font-family:var(--mono);font-size:11px;color:var(--text3)"></span>
+    </div>
+  </div>
+</div>
+
+</main>
+
+<script>
+// ══════════════════════════════════════════
+//  CONFIG SUPABASE
+// ══════════════════════════════════════════
+const SUPABASE_URL = 'https://ucbolpioaeqizpratlox.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_Lx6lSqjsyx6xg_jB0JTPSQ_mYoqTZRI';
+
+async function sbFetch(path, opts = {}) {
+  const url = SUPABASE_URL + '/rest/v1/' + path;
+  const res = await fetch(url, {
+    ...opts,
+    headers: {
+      'apikey': SUPABASE_KEY,
+      'Authorization': 'Bearer ' + SUPABASE_KEY,
+      'Content-Type': 'application/json',
+      'Prefer': opts.prefer || 'return=representation',
+      ...(opts.headers || {})
+    }
+  });
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error(err);
+  }
+  if (res.status === 204) return [];
+  return res.json();
+}
+
+// ══════════════════════════════════════════
+//  DADOS DE REFERÊNCIA (da planilha)
+// ══════════════════════════════════════════
+const ORDENS_SERVICO = [
+  {os:"0108",contrato:"381",ano:2025,etapa:"Única",sistema:"SES",projeto:"0019217",municipio:"Arroio do Tigre",descricao:"EC"},
+  {os:"0139",contrato:"381",ano:2023,etapa:"1",sistema:"SES",projeto:"0018413",municipio:"Alegrete",descricao:"Rede e EEBs"},
+  {os:"0139",contrato:"381",ano:2023,etapa:"2",sistema:"SES",projeto:"0018413",municipio:"Alegrete",descricao:"Rede e EEBs"},
+  {os:"0349",contrato:"381",ano:2024,etapa:"Única",sistema:"SES",projeto:"0018976",municipio:"Alegrete",descricao:"EC"},
+  {os:"0010",contrato:"381",ano:2026,etapa:"1 Revisão",sistema:"SES",projeto:"0019426",municipio:"Alegrete",descricao:"Rede e EEBs"},
+  {os:"0005",contrato:"381",ano:2023,etapa:"Única",sistema:"SES",projeto:"0018652",municipio:"Arroio dos Ratos",descricao:"EC"},
+  {os:"0039",contrato:"381",ano:2024,etapa:"1",sistema:"SES",projeto:"0018689",municipio:"Arroio dos Ratos",descricao:""},
+  {os:"0107",contrato:"381",ano:2024,etapa:"Única",sistema:"SES",projeto:"0018672",municipio:"Arroio dos Ratos",descricao:"ETE"},
+  {os:"0039",contrato:"381",ano:2024,etapa:"2",sistema:"SES",projeto:"0018765",municipio:"Arroio dos Ratos",descricao:""},
+  {os:"0039",contrato:"381",ano:2024,etapa:"1 Revisão",sistema:"SES",projeto:"0018689",municipio:"Arroio dos Ratos",descricao:"Rede e EEBs"},
+  {os:"0044",contrato:"381",ano:2025,etapa:"Única",sistema:"SES",projeto:"0019082",municipio:"Butiá",descricao:"EC"},
+  {os:"0230",contrato:"381",ano:2023,etapa:"Única",sistema:"SES",projeto:"0018613",municipio:"Caçapava do Sul",descricao:"EC"},
+  {os:"0211",contrato:"381",ano:2024,etapa:"Única",sistema:"SES",projeto:"0019179",municipio:"Caçapava do Sul",descricao:"ETE"},
+  {os:"0058",contrato:"381",ano:2023,etapa:"Única",sistema:"SES",projeto:"0019319",municipio:"Cacequi",descricao:"EC"},
+  {os:"0066",contrato:"381",ano:2024,etapa:"Única",sistema:"SES",projeto:"0017739",municipio:"Cachoeira do Sul",descricao:"Rede e EEBs"},
+  {os:"0127",contrato:"381",ano:2023,etapa:"1",sistema:"SES",projeto:"0018414",municipio:"Cachoeira do Sul",descricao:"Rede e EEBs"},
+  {os:"0127",contrato:"381",ano:2023,etapa:"Única",sistema:"SES",projeto:"0018970",municipio:"Cachoeira do Sul",descricao:"EC"},
+  {os:"0002",contrato:"381",ano:2024,etapa:"Única",sistema:"SES",projeto:"0018652",municipio:"Campo Bom",descricao:"EC"},
+  {os:"0194",contrato:"381",ano:2024,etapa:"Única",sistema:"SES",projeto:"0018824",municipio:"Campo Bom",descricao:"ETE"},
+  {os:"0217",contrato:"381",ano:2023,etapa:"Única",sistema:"SES",projeto:"0018663",municipio:"Candelária",descricao:"EC"},
+  {os:"0198",contrato:"381",ano:2024,etapa:"Única",sistema:"SES",projeto:"0018827",municipio:"Candelária",descricao:"ETE"},
+  {os:"0141",contrato:"381",ano:2023,etapa:"1",sistema:"SES",projeto:"0018418",municipio:"Carazinho",descricao:"Rede e EEBs"},
+  {os:"0142",contrato:"381",ano:2023,etapa:"2",sistema:"SES",projeto:"0018809",municipio:"Carazinho",descricao:"Rede e EEBs"},
+  {os:"0301",contrato:"381",ano:2024,etapa:"Única",sistema:"SES",projeto:"0018909",municipio:"Cerro Grande do Sul",descricao:"EC"},
+  {os:"0219",contrato:"381",ano:2023,etapa:"Única",sistema:"SES",projeto:"0018661",municipio:"Charqueadas",descricao:"EC"},
+  {os:"0201",contrato:"381",ano:2024,etapa:"Única",sistema:"SES",projeto:"0018830",municipio:"Charqueadas",descricao:"ETE"},
+  {os:"0004",contrato:"381",ano:2026,etapa:"Única",sistema:"SES",projeto:"0019416",municipio:"Charqueadas",descricao:"Rede e EEBs"},
+  {os:"0150",contrato:"381",ano:2023,etapa:"Única",sistema:"SES",projeto:"0018459",municipio:"Cidreira",descricao:"ETE"},
+  {os:"0044",contrato:"381",ano:2024,etapa:"1",sistema:"SES",projeto:"0018706",municipio:"Cruz Alta",descricao:"Rede e EEBs"},
+  {os:"0007",contrato:"381",ano:2024,etapa:"Única",sistema:"SES",projeto:"0018424",municipio:"Cruz Alta",descricao:"EC"},
+  {os:"0210",contrato:"381",ano:2024,etapa:"Única",sistema:"SES",projeto:"0018868",municipio:"Cruz Alta",descricao:"ETE"},
+  {os:"0044",contrato:"381",ano:2024,etapa:"2",sistema:"SES",projeto:"0018706",municipio:"Cruz Alta",descricao:"Rede e EEBs"},
+  {os:"0003",contrato:"381",ano:2023,etapa:"Única",sistema:"SES",projeto:"0018654",municipio:"Dois Irmãos",descricao:"EC"},
+  {os:"0108",contrato:"381",ano:2024,etapa:"Única",sistema:"SES",projeto:"0018763",municipio:"Dois Irmãos",descricao:"ETE"},
+  {os:"0337",contrato:"381",ano:2024,etapa:"1",sistema:"SES",projeto:"0018945",municipio:"Dois Irmãos",descricao:"Esgoto Misto"},
+  {os:"0051",contrato:"381",ano:2025,etapa:"Única",sistema:"SES",projeto:"0019024",municipio:"Encruzilhada do Sul",descricao:"EC"},
+  {os:"0147",contrato:"381",ano:2023,etapa:"Única",sistema:"SES",projeto:"0018425",municipio:"Espumoso",descricao:"Rede e EEBs"},
+  {os:"0008",contrato:"381",ano:2024,etapa:"Única",sistema:"SES",projeto:"0018737",municipio:"Espumoso",descricao:"EC"},
+  {os:"0209",contrato:"381",ano:2024,etapa:"Única",sistema:"SES",projeto:"0019186",municipio:"Espumoso",descricao:"ETE"},
+  {os:"0145",contrato:"381",ano:2023,etapa:"1",sistema:"SES",projeto:"0018417",municipio:"Horizontina",descricao:"Rede e EEBs"},
+  {os:"0248",contrato:"381",ano:2024,etapa:"Única",sistema:"SES",projeto:"0014974",municipio:"Horizontina",descricao:"ETE"},
+  {os:"0145",contrato:"381",ano:2023,etapa:"2",sistema:"SES",projeto:"0018417",municipio:"Horizontina",descricao:"Rede e EEBs"},
+  {os:"0125",contrato:"381",ano:2023,etapa:"1",sistema:"SES",projeto:"0018433",municipio:"Igrejinha",descricao:"Rede e EEBs"},
+  {os:"0004",contrato:"381",ano:2023,etapa:"Única",sistema:"SES",projeto:"0018653",municipio:"Igrejinha",descricao:"EC"},
+  {os:"0196",contrato:"381",ano:2024,etapa:"Única",sistema:"SES",projeto:"0018823",municipio:"Igrejinha",descricao:"ETE"},
+  {os:"0146",contrato:"381",ano:2023,etapa:"1",sistema:"SES",projeto:"0018441",municipio:"Ijuí",descricao:"Rede e EEBs"},
+  {os:"0163",contrato:"381",ano:2024,etapa:"2",sistema:"SES",projeto:"0018822",municipio:"Ijuí",descricao:"Rede e EEBs"},
+  {os:"0122",contrato:"381",ano:2023,etapa:"Única",sistema:"SES",projeto:"0018442",municipio:"Imbé",descricao:"Rede"},
+  {os:"0280",contrato:"381",ano:2024,etapa:"Única",sistema:"SES",projeto:"0018894",municipio:"Iraí",descricao:"EC"},
+  {os:"0246",contrato:"381",ano:2024,etapa:"Única",sistema:"SES",projeto:"0018835",municipio:"Iraí",descricao:"Rede e EEBs"},
+  {os:"0014",contrato:"381",ano:2024,etapa:"Única",sistema:"SES",projeto:"0018704",municipio:"Itaqui",descricao:"EC"},
+  {os:"0045",contrato:"381",ano:2024,etapa:"1",sistema:"SES",projeto:"0018705",municipio:"Itaqui",descricao:"Rede e EEBs"},
+  {os:"0049",contrato:"381",ano:2025,etapa:"Única",sistema:"SES",projeto:"0019022",municipio:"Jaguari",descricao:"EC"},
+  {os:"0395",contrato:"381",ano:2025,etapa:"Única",sistema:"SES",projeto:"0019313",municipio:"Lavras do Sul",descricao:"EC"},
+  {os:"0310",contrato:"381",ano:2024,etapa:"Única",sistema:"SES",projeto:"0018918",municipio:"Morro Reuter",descricao:"EC"},
+  {os:"0227",contrato:"381",ano:2025,etapa:"Única",sistema:"SAA",projeto:"0019349",municipio:"Nova Petrópolis",descricao:"Elevatória"},
+  {os:"0091",contrato:"381",ano:2025,etapa:"Única",sistema:"SES",projeto:"0019187",municipio:"Nova Santa Rita",descricao:"EC"},
+  {os:"0884",contrato:"381",ano:2025,etapa:"1",sistema:"SES",projeto:"0019425",municipio:"Nova Santa Rita",descricao:"Rede e EEBs"},
+  {os:"0011",contrato:"381",ano:2026,etapa:"Única",sistema:"SES",projeto:"0019427",municipio:"Nova Santa Rita",descricao:"ETE"},
+  {os:"0221",contrato:"381",ano:2023,etapa:"Única",sistema:"SES",projeto:"0018659",municipio:"Pantano Grande",descricao:"EC"},
+  {os:"0218",contrato:"381",ano:2023,etapa:"Única",sistema:"SES",projeto:"0018662",municipio:"Parobé",descricao:"EC"},
+  {os:"0196",contrato:"381",ano:2025,etapa:"Única",sistema:"SES",projeto:"0019038",municipio:"Passa Sete",descricao:"EC"},
+  {os:"0314",contrato:"381",ano:2024,etapa:"Única",sistema:"SES",projeto:"0018921",municipio:"Portão",descricao:"EC"},
+  {os:"0865",contrato:"381",ano:2025,etapa:"Única",sistema:"SES",projeto:"0000000",municipio:"Porto Alegre",descricao:"Rede e EEBs"},
+  {os:"0046",contrato:"381",ano:2024,etapa:"1",sistema:"SES",projeto:"0018753",municipio:"Quaraí",descricao:"Rede e EEBs"},
+  {os:"0343",contrato:"381",ano:2024,etapa:"Única",sistema:"SES",projeto:"0018975",municipio:"Quaraí",descricao:"EC"},
+  {os:"0316",contrato:"381",ano:2024,etapa:"Única",sistema:"SES",projeto:"0018924",municipio:"Restinga Seca",descricao:"EC"},
+  {os:"0001",contrato:"381",ano:2023,etapa:"Única",sistema:"SES",projeto:"0018656",municipio:"Rio Pardo",descricao:"EC"},
+  {os:"0041",contrato:"381",ano:2024,etapa:"1",sistema:"SES",projeto:"0018691",municipio:"Rio Pardo",descricao:""},
+  {os:"0109",contrato:"381",ano:2024,etapa:"Única",sistema:"SES",projeto:"0018764",municipio:"Rio Pardo",descricao:"ETE"},
+  {os:"0198",contrato:"381",ano:2025,etapa:"Única",sistema:"SES",projeto:"0019043",municipio:"Rolante",descricao:"EC"},
+  {os:"0376",contrato:"381",ano:2025,etapa:"Única",sistema:"SES",projeto:"0019306",municipio:"Rolante",descricao:"Rede e EEBs"},
+  {os:"0138",contrato:"381",ano:2023,etapa:"Única",sistema:"SES",projeto:"0018420",municipio:"Rosário do Sul",descricao:"Rede e EEBs"},
+  {os:"0350",contrato:"381",ano:2024,etapa:"Única",sistema:"SES",projeto:"0018977",municipio:"Rosário do Sul",descricao:"EC"},
+  {os:"0321",contrato:"381",ano:2025,etapa:"Única",sistema:"SES",projeto:"0019284",municipio:"Rosário do Sul",descricao:"ETE"},
+  {os:"0111",contrato:"381",ano:2024,etapa:"Única",sistema:"SES",projeto:"0018766",municipio:"Santa Cruz do Sul",descricao:"EC"},
+  {os:"0124",contrato:"381",ano:2023,etapa:"1",sistema:"SES",projeto:"0018415",municipio:"Santa Maria",descricao:"Rede e EEBs"},
+  {os:"0144",contrato:"381",ano:2023,etapa:"Única",sistema:"SES",projeto:"0018426",municipio:"Santa Rosa",descricao:"Rede e EEBs"},
+  {os:"0057",contrato:"381",ano:2025,etapa:"Única",sistema:"SES",projeto:"0019030",municipio:"Santana da Boa Vista",descricao:"EC"},
+  {os:"0131",contrato:"381",ano:2023,etapa:"1",sistema:"SES",projeto:"0018445",municipio:"Santo Antônio da Patrulha",descricao:"Rede e EEBs"},
+  {os:"0137",contrato:"381",ano:2023,etapa:"1",sistema:"SES",projeto:"0018443",municipio:"São Borja",descricao:"Rede e EEBs"},
+  {os:"0344",contrato:"381",ano:2024,etapa:"Única",sistema:"SES",projeto:"0018974",municipio:"São Borja",descricao:"EC"},
+  {os:"0056",contrato:"381",ano:2025,etapa:"Única",sistema:"SES",projeto:"0019029",municipio:"São Francisco de Assis",descricao:"EC"},
+  {os:"0014",contrato:"381",ano:2026,etapa:"Única",sistema:"SES",projeto:"0019438",municipio:"São Francisco de Assis",descricao:"Rede e EEBs"},
+  {os:"0223",contrato:"381",ano:2023,etapa:"Única",sistema:"SES",projeto:"0018657",municipio:"São Jerônimo",descricao:"EC"},
+  {os:"0143",contrato:"381",ano:2023,etapa:"1",sistema:"SES",projeto:"0018444",municipio:"São Luiz Gonzaga",descricao:"Rede e EEBs"},
+  {os:"0001",contrato:"381",ano:2026,etapa:"1",sistema:"SES",projeto:"0018444",municipio:"São Luiz Gonzaga",descricao:"Rede e EEBs"},
+  {os:"0319",contrato:"381",ano:2024,etapa:"Única",sistema:"SES",projeto:"0018927",municipio:"São Pedro do Sul",descricao:"EC"},
+  {os:"0322",contrato:"381",ano:2024,etapa:"Única",sistema:"SES",projeto:"0018930",municipio:"São Sepé",descricao:"EC"},
+  {os:"0126",contrato:"381",ano:2023,etapa:"Única",sistema:"SES",projeto:"0018436",municipio:"Sapiranga",descricao:"Rede e EEBs"},
+  {os:"0204",contrato:"381",ano:2024,etapa:"Única",sistema:"SES",projeto:"0018833",municipio:"Sapiranga",descricao:"ETE"},
+  {os:"0219",contrato:"381",ano:2024,etapa:"Única",sistema:"SES",projeto:"0018836",municipio:"Sapiranga",descricao:"EC"},
+  {os:"0220",contrato:"381",ano:2023,etapa:"Única",sistema:"SES",projeto:"0018660",municipio:"Sobradinho",descricao:"EC"},
+  {os:"0190",contrato:"381",ano:2024,etapa:"Única",sistema:"SAA",projeto:"0018801",municipio:"SURCEN",descricao:"Inspeções"},
+  {os:"0123",contrato:"381",ano:2023,etapa:"1",sistema:"SES",projeto:"0018419",municipio:"Tapes",descricao:"Rede e EEBs"},
+  {os:"0329",contrato:"381",ano:2024,etapa:"Única",sistema:"SES",projeto:"0018936",municipio:"Taquara",descricao:"EC"},
+  {os:"0613",contrato:"381",ano:2025,etapa:"1",sistema:"SES",projeto:"0019322",municipio:"Taquara",descricao:"Rede e EEBs"},
+  {os:"0841",contrato:"381",ano:2025,etapa:"Única",sistema:"SES",projeto:"0019242",municipio:"Três Coroas",descricao:"EC"},
+  {os:"0006",contrato:"381",ano:2023,etapa:"Única",sistema:"SES",projeto:"0018651",municipio:"Triunfo",descricao:"EC"},
+  {os:"0042",contrato:"381",ano:2024,etapa:"Única",sistema:"SES",projeto:"0018692",municipio:"Triunfo",descricao:"Rede"},
+  {os:"0222",contrato:"381",ano:2023,etapa:"Única",sistema:"SES",projeto:"0018658",municipio:"Tupanciretã",descricao:"EC"},
+  {os:"0882",contrato:"381",ano:2025,etapa:"Única",sistema:"SES",projeto:"0019506",municipio:"Tupanciretã",descricao:"Rede e EEBs"},
+  {os:"0015",contrato:"381",ano:2023,etapa:"Única",sistema:"SES",projeto:"0018665",municipio:"Venâncio Aires",descricao:"EC"},
+  {os:"0043",contrato:"381",ano:2023,etapa:"Única",sistema:"SES",projeto:"0018693",municipio:"Venâncio Aires",descricao:"Rede e EEBs"},
+  {os:"0013",contrato:"381",ano:2026,etapa:"Única",sistema:"SES",projeto:"0018430",municipio:"Cacequi",descricao:"Rede e EEBs"},
+];
+
+const AREAS_PROJETO = [
+  {nome:"Ambiental",sigla:"AMB"},{nome:"Arquitetura",sigla:"ARQ"},{nome:"Automação",sigla:"AUT"},
+  {nome:"Cadastro",sigla:"CAD"},{nome:"Concepção",sigla:"CON"},{nome:"Elétrico",sigla:"ELE"},
+  {nome:"Geotecnia",sigla:"GEO"},{nome:"Geral, quando inclui mais de uma especialidade",sigla:"GER"},
+  {nome:"Hidráulico",sigla:"HID"},{nome:"Loteamento",sigla:"LOT"},{nome:"Mecânico",sigla:"MEC"},
+  {nome:"Paisagismo",sigla:"PAI"},{nome:"Pavimentação",sigla:"PAV"},
+  {nome:"Proteção Contra Incêndio",sigla:"PCI"},{nome:"Regularização de Áreas",sigla:"REA"},
+  {nome:"Subestação",sigla:"SUB"},{nome:"Topografia",sigla:"TOP"},
+];
+
+const ASSUNTOS_DOMINANTES = [
+  {nome:"Adutora de Água Bruta",sigla:"ADB"},{nome:"Adutora de Água Tratada",sigla:"ADT"},
+  {nome:"Barragem",sigla:"BAR"},{nome:"Captação",sigla:"CAP"},{nome:"Coletor Tronco",sigla:"CT"},
+  {nome:"Diagnóstico Operacional",sigla:"DIOP"},{nome:"Elevatória de Água Bruta",sigla:"EAB"},
+  {nome:"Elevatória de Água Tratada",sigla:"EAT"},{nome:"Elevatória de Esgoto Bruto",sigla:"EEB"},
+  {nome:"Elevatória de Esgoto Tratado",sigla:"EET"},{nome:"Emissário",sigla:"EMI"},
+  {nome:"Estação de Tratamento de Água",sigla:"ETA"},{nome:"Estação de Tratamento de Esgoto",sigla:"ETE"},
+  {nome:"Geral, quando inclui mais de uma especialidade para EC",sigla:"GER"},
+  {nome:"Interceptor",sigla:"INT"},{nome:"Linha de Recalque",sigla:"LRE"},{nome:"Poço",sigla:"POC"},
+  {nome:"Rede Coletora de Esgoto Misto",sigla:"RCM"},{nome:"Rede Coletora de Esgoto Sanitário",sigla:"RCS"},
+  {nome:"Rede Coletora Pluvial",sigla:"RCP"},{nome:"Rede de Distribuição",sigla:"RED"},
+  {nome:"Reservatório",sigla:"RES"},{nome:"Subestação Transformadora",sigla:"SET"},
+  {nome:"Tratamento do Lodo",sigla:"LOD"},{nome:"Unidade de Tratamento de Resíduo",sigla:"UTR"},
+];
+
+const TIPOS_DOCUMENTO = [
+  {nome:"Memorial Descritivo ou Memorial Descritivo e de Cálculo",sigla:"MD",temIndice:true},
+  {nome:"Memorial de Cálculo em Planilha",sigla:"MC",temIndice:true},
+  {nome:"Simulação ou Modelagem",sigla:"MC",temIndice:true},
+  {nome:"Desenho",sigla:"DE",temIndice:true},
+  {nome:"Especificação Técnica",sigla:"ET",temIndice:true},
+  {nome:"Relatório Técnico",sigla:"RL",temIndice:true},
+  {nome:"Nota Técnica",sigla:"NT",temIndice:true},
+  {nome:"Termo de Referência",sigla:"TF",temIndice:true},
+  {nome:"Lista de Documentos",sigla:"LD",temIndice:true},
+  {nome:"Lista de Materiais",sigla:"LM",temIndice:true},
+  {nome:"Arquivos Geoespaciais",sigla:"AG",temIndice:true},
+  {nome:"Briefing",sigla:"SEM_ÍNDICE_NE",temIndice:false},
+  {nome:"Apresentação",sigla:"SEM_ÍNDICE_NE",temIndice:false},
+  {nome:"Matrícula",sigla:"SEM_ÍNDICE_NE",temIndice:false},
+  {nome:"ART",sigla:"SEM_ÍNDICE_NE",temIndice:false},
+];
+
+const NIVEIS_PROJETO = [
+  {nome:"Estudo de Concepção",codigo:"0",abrev:"EC"},
+  {nome:"Anteprojeto",codigo:"AP",abrev:"AP"},
+  {nome:"Projeto Básico",codigo:"1",abrev:"PB"},
+  {nome:"Projeto Executivo",codigo:"2",abrev:"PE"},
+];
+
+// ══════════════════════════════════════════
+//  ESTADO
+// ══════════════════════════════════════════
+let allData = [];
+let filteredData = [];
+let currentPage = 1;
+const PAGE_SIZE = 50;
+let sortCol = 'id';
+let sortAsc = false;
+let exportData = [];
+
+// ══════════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', async () => {
+  populateFormSelects();
+  populateFilterSelects();
+  setDefaultDate();
+  await checkConnection();
+  await loadData();
+});
+
+async function checkConnection() {
+  try {
+    await sbFetch('ldp?select=id&limit=1');
+    document.getElementById('dbStatus').textContent = 'supabase ok';
+    document.getElementById('dbStatus').style.color = 'var(--green)';
+  } catch(e) {
+    document.getElementById('dbStatus').textContent = 'erro de conexão';
+    document.getElementById('dbStatus').style.color = 'var(--red)';
+  }
+}
+
+function setDefaultDate() {
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('f_data').value = today;
+}
+
+function populateFormSelects() {
+  // OS
+  const osEl = document.getElementById('f_os');
+  ORDENS_SERVICO.forEach(o => {
+    const opt = document.createElement('option');
+    const label = `${o.os}.${o.contrato}.${o.ano} - Etapa ${o.etapa} - ${o.municipio.trim()}`;
+    opt.value = JSON.stringify(o);
+    opt.textContent = label;
+    osEl.appendChild(opt);
+  });
+
+  // Nível
+  const nivelEl = document.getElementById('f_nivel');
+  NIVEIS_PROJETO.forEach(n => {
+    const opt = document.createElement('option');
+    opt.value = JSON.stringify(n);
+    opt.textContent = n.nome;
+    nivelEl.appendChild(opt);
+  });
+
+  // Área
+  const areaEl = document.getElementById('f_area');
+  AREAS_PROJETO.forEach(a => {
+    const opt = document.createElement('option');
+    opt.value = JSON.stringify(a);
+    opt.textContent = `${a.nome} (${a.sigla})`;
+    areaEl.appendChild(opt);
+  });
+
+  // Assunto
+  const assuntoEl = document.getElementById('f_assunto');
+  ASSUNTOS_DOMINANTES.forEach(a => {
+    const opt = document.createElement('option');
+    opt.value = JSON.stringify(a);
+    opt.textContent = `${a.nome} (${a.sigla})`;
+    assuntoEl.appendChild(opt);
+  });
+
+  // Tipo
+  const tipoEl = document.getElementById('f_tipo');
+  TIPOS_DOCUMENTO.forEach(t => {
+    const opt = document.createElement('option');
+    opt.value = JSON.stringify(t);
+    opt.textContent = t.nome + (t.sigla !== 'SEM_ÍNDICE_NE' ? ` (${t.sigla})` : ' — sem índice NE');
+    tipoEl.appendChild(opt);
+  });
+}
+
+function populateFilterSelects() {
+  const munsConsulta = document.getElementById('filterMunicipio');
+  const munsExport = document.getElementById('exportFilterMunicipio') || document.getElementById('exportFilterMun');
+  const assuntoFilter = document.getElementById('filterAssunto');
+
+  const muns = [...new Set(ORDENS_SERVICO.map(o => o.municipio.trim()))].sort();
+  muns.forEach(m => {
+    [munsConsulta, munsExport].forEach(el => {
+      if(el) {
+        const opt = document.createElement('option');
+        opt.value = m;
+        opt.textContent = m;
+        el.appendChild(opt);
+      }
+    });
+  });
+
+  ASSUNTOS_DOMINANTES.forEach(a => {
+    const opt = document.createElement('option');
+    opt.value = a.nome;
+    opt.textContent = a.nome;
+    assuntoFilter.appendChild(opt);
+  });
+}
+
+// ══════════════════════════════════════════
+//  LOAD DATA
+// ══════════════════════════════════════════
+async function loadData() {
+  showLoading(true);
+  try {
+    const data = await sbFetch('ldp?select=*&order=id.desc&limit=5000');
+    allData = data;
+    updateStats();
+    applyFilters();
+    loadExportData();
+  } catch(e) {
+    toast('Erro ao carregar dados: ' + e.message, 'error');
+    renderTable([]);
+  }
+  showLoading(false);
+}
+
+function updateStats() {
+  document.getElementById('stat-total').textContent = allData.length.toLocaleString('pt-BR');
+  const muns = new Set(allData.map(r => r.municipio).filter(Boolean));
+  document.getElementById('stat-municipios').textContent = muns.size;
+  document.getElementById('stat-pb').textContent = allData.filter(r => r.nivel_projeto === 'Projeto Básico').length.toLocaleString('pt-BR');
+  document.getElementById('stat-pe').textContent = allData.filter(r => r.nivel_projeto === 'Projeto Executivo').length.toLocaleString('pt-BR');
+}
+
+// ══════════════════════════════════════════
+//  FILTERS & TABLE
+// ══════════════════════════════════════════
+function applyFilters() {
+  const q = document.getElementById('searchInput').value.toLowerCase();
+  const mun = document.getElementById('filterMunicipio').value;
+  const nivel = document.getElementById('filterNivel').value;
+  const assunto = document.getElementById('filterAssunto').value;
+
+  filteredData = allData.filter(r => {
+    if(mun && r.municipio !== mun) return false;
+    if(nivel && r.nivel_projeto !== nivel) return false;
+    if(assunto && r.assunto_dominante !== assunto) return false;
+    if(q) {
+      const haystack = [r.nomenclatura_corsan, r.indice_ne, r.municipio, r.os_numero,
+        r.assunto_dominante, r.titulo3, r.complemento].join(' ').toLowerCase();
+      if(!haystack.includes(q)) return false;
+    }
+    return true;
+  });
+
+  currentPage = 1;
+  renderTable(filteredData);
+}
+
+function clearFilters() {
+  document.getElementById('searchInput').value = '';
+  document.getElementById('filterMunicipio').value = '';
+  document.getElementById('filterNivel').value = '';
+  document.getElementById('filterAssunto').value = '';
+  applyFilters();
+}
+
+function sortBy(col) {
+  if(sortCol === col) sortAsc = !sortAsc;
+  else { sortCol = col; sortAsc = true; }
+  filteredData.sort((a,b) => {
+    const av = a[col] || '', bv = b[col] || '';
+    return sortAsc ? av.toString().localeCompare(bv.toString()) : bv.toString().localeCompare(av.toString());
+  });
+  renderTable(filteredData);
+}
+
+function renderTable(data) {
+  const tbody = document.getElementById('tableBody');
+  const start = (currentPage-1)*PAGE_SIZE;
+  const pageData = data.slice(start, start+PAGE_SIZE);
+
+  if(!pageData.length) {
+    tbody.innerHTML = `<tr><td colspan="8"><div class="empty-state">
+      <svg width="40" height="40" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M21 21l-6-6m2-5a7 7 0 1 1-14 0 7 7 0 0 1 14 0z"/></svg>
+      <p>Nenhum índice encontrado</p>
+      ${allData.length === 0 ? '<p style="margin-top:6px;font-size:11px">O banco está vazio. Cadastre o primeiro índice!</p>' : ''}
+    </div></td></tr>`;
+  } else {
+    tbody.innerHTML = pageData.map(r => {
+      const nivelBadge = {
+        'Estudo de Concepção': 'badge-green',
+        'Projeto Básico': 'badge-blue',
+        'Projeto Executivo': 'badge-yellow',
+        'Anteprojeto': 'badge-purple'
+      }[r.nivel_projeto] || 'badge-blue';
+
+      const nivelAbrev = {
+        'Estudo de Concepção': 'EC',
+        'Projeto Básico': 'PB',
+        'Projeto Executivo': 'PE',
+        'Anteprojeto': 'AP',
+      }[r.nivel_projeto] || r.nivel_projeto;
+
+      return `<tr>
+        <td class="mono-cell">${r.os_numero || '—'}</td>
+        <td>${r.municipio || '—'}</td>
+        <td><span class="badge ${nivelBadge}">${nivelAbrev}</span></td>
+        <td title="${r.assunto_dominante||''}">${(r.assunto_dominante||'').substring(0,22)}</td>
+        <td><span class="badge badge-blue">${r.tipo_documento_sigla||r.tipo_documento||'—'}</span></td>
+        <td class="mono-cell" style="max-width:260px" title="${r.nomenclatura_corsan||''}">${r.nomenclatura_corsan||'—'}</td>
+        <td class="mono-cell" style="max-width:200px" title="${r.indice_ne||''}">${r.indice_ne||'—'}</td>
+        <td>
+          <button class="btn" style="padding:4px 8px;font-size:11px" onclick="showDetail(${r.id})">ver</button>
+          <button class="btn" style="padding:4px 8px;font-size:11px;margin-left:4px;background:var(--red-dim);color:var(--red);border-color:rgba(239,68,68,0.3)" onclick="deleteRow(${r.id})">del</button>
+        </td>
+      </tr>`;
+    }).join('');
+  }
+
+  const total = data.length;
+  document.getElementById('tableInfo').textContent = `${Math.min(start+1,total)}–${Math.min(start+PAGE_SIZE,total)} de ${total.toLocaleString('pt-BR')} registros`;
+  renderPager(total);
+}
+
+function renderPager(total) {
+  const pages = Math.ceil(total/PAGE_SIZE);
+  const pager = document.getElementById('pager');
+  if(pages <= 1) { pager.innerHTML=''; return; }
+
+  let html = `<button class="page-btn" onclick="goPage(${currentPage-1})" ${currentPage===1?'disabled':''}>‹</button>`;
+  const range = [];
+  for(let i=1;i<=pages;i++) {
+    if(i===1||i===pages||Math.abs(i-currentPage)<=2) range.push(i);
+    else if(range[range.length-1]!=='…') range.push('…');
+  }
+  range.forEach(p => {
+    if(p==='…') html += `<span style="color:var(--text3);padding:0 4px">…</span>`;
+    else html += `<button class="page-btn ${p===currentPage?'active':''}" onclick="goPage(${p})">${p}</button>`;
+  });
+  html += `<button class="page-btn" onclick="goPage(${currentPage+1})" ${currentPage===pages?'disabled':''}>›</button>`;
+  pager.innerHTML = html;
+}
+
+function goPage(p) {
+  const pages = Math.ceil(filteredData.length/PAGE_SIZE);
+  if(p<1||p>pages) return;
+  currentPage = p;
+  renderTable(filteredData);
+}
+
+// ══════════════════════════════════════════
+//  DETAIL MODAL
+// ══════════════════════════════════════════
+function showDetail(id) {
+  const r = allData.find(x => x.id === id);
+  if(!r) return;
+  const fields = [
+    ['Índice NE', r.indice_ne],
+    ['Nomenclatura CORSAN', r.nomenclatura_corsan],
+    ['OS', r.os_numero],
+    ['Município', r.municipio],
+    ['Nível de Projeto', r.nivel_projeto],
+    ['Área de Projeto', r.area_projeto],
+    ['Assunto Dominante', r.assunto_dominante],
+    ['Tipo de Documento', r.tipo_documento],
+    ['Nº de Pranchas', r.num_pranchas],
+    ['Título 3', r.titulo3],
+    ['Título 4', r.titulo4],
+    ['Complemento', r.complemento],
+    ['Nome da Unidade', r.nome_unidade],
+    ['Data de Inclusão', r.data_inclusao],
+    ['Sigla Responsável', r.sigla_responsavel],
+    ['Índice no DOX', r.indice_controlado_dox ? 'Sim' : 'Não'],
+  ];
+  document.getElementById('detailContent').innerHTML = fields
+    .filter(([,v])=>v)
+    .map(([k,v])=>`
+      <div style="display:flex;gap:12px;padding:8px 0;border-bottom:1px solid var(--border)">
+        <span style="font-size:11px;color:var(--text3);min-width:150px;font-family:var(--mono)">${k}</span>
+        <span style="font-size:12px;color:var(--text);font-family:${['Índice NE','Nomenclatura CORSAN'].includes(k)?'var(--mono)':'var(--sans)'};color:${['Índice NE','Nomenclatura CORSAN'].includes(k)?'var(--accent2)':'var(--text)'}">${v}</span>
+      </div>`).join('');
+  document.getElementById('detailModal').classList.add('show');
+}
+
+function closeModal(id) {
+  document.getElementById(id).classList.remove('show');
+}
+
+async function deleteRow(id) {
+  if(!confirm('Confirma exclusão do índice #' + id + '?')) return;
+  showLoading(true);
+  try {
+    await sbFetch('ldp?id=eq.' + id, { method: 'DELETE', prefer: 'return=minimal' });
+    toast('Índice excluído', 'success');
+    await loadData();
+  } catch(e) {
+    toast('Erro ao excluir: ' + e.message, 'error');
+  }
+  showLoading(false);
+}
+
+// ══════════════════════════════════════════
+//  FORM — CADASTRO
+// ══════════════════════════════════════════
+function onOsChange() {
+  const val = document.getElementById('f_os').value;
+  if(!val) {
+    document.getElementById('f_municipio').value = '';
+    document.getElementById('f_projeto').value = '';
+    document.getElementById('f_sistema').value = '';
+    return;
+  }
+  const os = JSON.parse(val);
+  document.getElementById('f_municipio').value = os.municipio.trim();
+  document.getElementById('f_projeto').value = os.projeto;
+  document.getElementById('f_sistema').value = os.sistema;
+  updatePreview();
+}
+
+function onTipoChange() {
+  const val = document.getElementById('f_tipo').value;
+  if(!val) return;
+  const tipo = JSON.parse(val);
+  if(!tipo.temIndice) {
+    document.getElementById('f_dox').value = 'nao';
+  }
+  updatePreview();
+}
+
+function updatePreview() {
+  const corsan = gerarNomenclaturaCorsan();
+  const ne = gerarIndiceNE();
+
+  const corsanEl = document.getElementById('prevCorsan');
+  const neEl = document.getElementById('prevNE');
+
+  if(corsan) {
+    corsanEl.className = 'preview-value small';
+    corsanEl.textContent = corsan;
+  } else {
+    corsanEl.className = 'preview-empty';
+    corsanEl.textContent = 'Preencha os campos obrigatórios';
+  }
+
+  if(ne) {
+    neEl.className = 'preview-value small';
+    neEl.textContent = ne;
+  } else {
+    neEl.className = 'preview-empty';
+    neEl.textContent = 'Preencha os campos obrigatórios';
+  }
+}
+
+function gerarNomenclaturaCorsan() {
+  try {
+    const osVal = document.getElementById('f_os').value;
+    const nivelVal = document.getElementById('f_nivel').value;
+    const areaVal = document.getElementById('f_area').value;
+    const assuntoVal = document.getElementById('f_assunto').value;
+    const complemento = document.getElementById('f_complemento').value.trim();
+    const pranchas = document.getElementById('f_pranchas').value.trim() || '0';
+
+    if(!osVal||!nivelVal||!areaVal||!assuntoVal||!complemento) return null;
+
+    const os = JSON.parse(osVal);
+    const nivel = JSON.parse(nivelVal);
+    const area = JSON.parse(areaVal);
+    const assunto = JSON.parse(assuntoVal);
+
+    // Formato: NNN-PPPPPPP-SIS-ASS-ARE-PRA-NIV-Complemento
+    const numMun = os.projeto.substring(0,3);
+    const numProj = os.projeto;
+    const sis = os.sistema;
+    const ass = assunto.sigla;
+    const are = area.sigla;
+    const niv = nivel.abrev;
+    const unidade = document.getElementById('f_unidade').value.trim();
+    const sufixo = unidade ? `${complemento}_${unidade}` : complemento;
+
+    return `${numMun}-${numProj}-${sis}-${ass}-${are}-${pranchas}-${niv}-${sufixo}`;
+  } catch(e) { return null; }
+}
+
+function gerarIndiceNE() {
+  try {
+    const osVal = document.getElementById('f_os').value;
+    const nivelVal = document.getElementById('f_nivel').value;
+    const tipoVal = document.getElementById('f_tipo').value;
+    const titulo3 = document.getElementById('f_titulo3').value.trim().toUpperCase();
+    const titulo4 = document.getElementById('f_titulo4').value.trim().toUpperCase();
+
+    if(!osVal||!nivelVal||!tipoVal||!titulo3) return null;
+
+    const tipo = JSON.parse(tipoVal);
+    if(!tipo.temIndice) return 'SEM ÍNDICE NE';
+
+    const os = JSON.parse(osVal);
+    const nivel = JSON.parse(nivelVal);
+
+    const osStr = `${os.os}.${os.contrato}.${os.ano}`;
+    const etapa = os.etapa;
+    return `EGVP00553/${osStr} - Etapa ${etapa} - ${titulo3}${titulo4?' - '+titulo4:''}`;
+  } catch(e) { return null; }
+}
+
+async function submitForm(e) {
+  e.preventDefault();
+  showLoading(true);
+
+  try {
+    const osVal = document.getElementById('f_os').value;
+    const nivelVal = document.getElementById('f_nivel').value;
+    const areaVal = document.getElementById('f_area').value;
+    const assuntoVal = document.getElementById('f_assunto').value;
+    const tipoVal = document.getElementById('f_tipo').value;
+
+    const os = JSON.parse(osVal);
+    const nivel = JSON.parse(nivelVal);
+    const area = JSON.parse(areaVal);
+    const assunto = JSON.parse(assuntoVal);
+    const tipo = JSON.parse(tipoVal);
+
+    const record = {
+      os_numero: os.os,
+      os_contrato: os.contrato,
+      os_ano: os.ano,
+      os_etapa: os.etapa,
+      municipio: os.municipio.trim(),
+      numero_projeto: os.projeto,
+      sistema: os.sistema,
+      data_inclusao: document.getElementById('f_data').value,
+      sigla_responsavel: document.getElementById('f_sigla').value,
+      indice_controlado_dox: document.getElementById('f_dox').value === 'sim',
+      padrao_antigo: document.getElementById('f_antigo').value === 'sim',
+      nivel_projeto: nivel.nome,
+      nivel_codigo: nivel.codigo,
+      nivel_abrev: nivel.abrev,
+      area_projeto: area.nome,
+      area_sigla: area.sigla,
+      assunto_dominante: assunto.nome,
+      assunto_sigla: assunto.sigla,
+      tipo_documento: tipo.nome,
+      tipo_documento_sigla: tipo.sigla,
+      num_pranchas: document.getElementById('f_pranchas').value.trim() || '0',
+      seq3: document.getElementById('f_seq3').value.trim(),
+      seq4: document.getElementById('f_seq4').value.trim(),
+      titulo3: document.getElementById('f_titulo3').value.trim(),
+      titulo4: document.getElementById('f_titulo4').value.trim(),
+      complemento: document.getElementById('f_complemento').value.trim(),
+      nome_unidade: document.getElementById('f_unidade').value.trim(),
+      nomenclatura_corsan: gerarNomenclaturaCorsan(),
+      indice_ne: gerarIndiceNE(),
+    };
+
+    await sbFetch('ldp', {
+      method: 'POST',
+      body: JSON.stringify(record),
+    });
+
+    toast('Índice salvo com sucesso!', 'success');
+    resetForm();
+    await loadData();
+    showView('consulta');
+  } catch(e) {
+    toast('Erro ao salvar: ' + e.message, 'error');
+    console.error(e);
+  }
+  showLoading(false);
+}
+
+function resetForm() {
+  document.getElementById('ldpForm').reset();
+  setDefaultDate();
+  document.getElementById('f_municipio').value = '';
+  document.getElementById('f_projeto').value = '';
+  document.getElementById('f_sistema').value = '';
+  document.getElementById('prevCorsan').className = 'preview-empty';
+  document.getElementById('prevCorsan').textContent = 'Preencha os campos abaixo';
+  document.getElementById('prevNE').className = 'preview-empty';
+  document.getElementById('prevNE').textContent = 'Preencha os campos abaixo';
+}
+
+// ══════════════════════════════════════════
+//  EXPORT DOX
+// ══════════════════════════════════════════
+function loadExportData() {
+  const mun = document.getElementById('exportFilterMun').value;
+  const nivel = document.getElementById('exportFilterNivel').value;
+  const di = document.getElementById('exportDataInicio').value;
+  const df = document.getElementById('exportDataFim').value;
+
+  exportData = allData.filter(r => {
+    if(mun && r.municipio !== mun) return false;
+    if(nivel && r.nivel_projeto !== nivel) return false;
+    if(!r.indice_controlado_dox) return false;
+    if(di && r.data_inclusao < di) return false;
+    if(df && r.data_inclusao > df) return false;
+    return true;
+  });
+
+  const today = new Date().toISOString().split('T')[0];
+  const emissao = new Date(Date.now() + 30*24*60*60*1000).toISOString().split('T')[0];
+
+  const tbody = document.getElementById('exportBody');
+  if(!exportData.length) {
+    tbody.innerHTML = `<tr><td colspan="16"><div class="empty-state"><p>Nenhum registro para exportar com os filtros atuais</p></div></td></tr>`;
+    document.getElementById('exportInfo').textContent = '';
+    return;
+  }
+
+  tbody.innerHTML = exportData.map((r, i) => `<tr>
+    <td class="mono-cell">${r.id}</td>
+    <td class="mono-cell" style="max-width:220px" title="${r.indice_ne||''}">${(r.indice_ne||'').substring(0,30)}</td>
+    <td>${r.os_etapa||''}</td>
+    <td>${r.num_pranchas||''}</td>
+    <td>${r.area_sigla||''}</td>
+    <td>${r.tipo_documento_sigla||''}</td>
+    <td>01</td>
+    <td>${r.seq3||''}</td>
+    <td>A4</td>
+    <td title="${r.municipio||''}">${(r.municipio||'').substring(0,20)} - Sistema de Esgotamento Sanitário</td>
+    <td>${r.nivel_projeto||''}</td>
+    <td title="${r.titulo3||''}">${(r.titulo3||'').substring(0,25)}</td>
+    <td title="${r.titulo4||''}">${(r.titulo4||'').substring(0,25)}</td>
+    <td class="mono-cell" style="max-width:240px" title="${r.nomenclatura_corsan||''}">${(r.nomenclatura_corsan||'').substring(0,30)}</td>
+    <td class="mono-cell">${today}</td>
+    <td class="mono-cell">${emissao}</td>
+  </tr>`).join('');
+
+  document.getElementById('exportInfo').textContent = `${exportData.length} registros prontos para exportação`;
+}
+
+function exportCSV() {
+  if(!exportData.length) { toast('Nenhum dado para exportar', 'error'); return; }
+  const today = new Date().toISOString().split('T')[0];
+  const emissao = new Date(Date.now() + 30*24*60*60*1000).toISOString().split('T')[0];
+
+  const headers = ['Linha','Description','areaEmpreendimento','codigoOrigem','disciplina',
+    'tipoDocumento','folha','sequencial','formato','titulo1','titulo2','titulo3','titulo4',
+    'codigoCliente','dataInicialPrevista','dataEmissaoPrevista'];
+
+  const rows = exportData.map(r => [
+    r.id,
+    r.indice_ne || '',
+    r.os_etapa || '',
+    r.num_pranchas || '',
+    r.area_sigla || '',
+    r.tipo_documento_sigla || '',
+    '01',
+    r.seq3 || '',
+    'A4',
+    `${(r.municipio||'').trim()} - Sistema de Esgotamento Sanitário`,
+    r.nivel_projeto || '',
+    r.titulo3 || '',
+    r.titulo4 || '',
+    r.nomenclatura_corsan || '',
+    today,
+    emissao,
+  ]);
+
+  const csv = [headers, ...rows].map(r => r.map(v => `"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const blob = new Blob(['\uFEFF'+csv], {type:'text/csv;charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `LDP_DOX_export_${today}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+  toast('CSV exportado!', 'success');
+}
+
+function copyTable() {
+  if(!exportData.length) { toast('Nenhum dado para copiar', 'error'); return; }
+  const today = new Date().toISOString().split('T')[0];
+  const emissao = new Date(Date.now() + 30*24*60*60*1000).toISOString().split('T')[0];
+  const headers = ['Linha','Description','areaEmpreendimento','codigoOrigem','disciplina',
+    'tipoDocumento','folha','sequencial','formato','titulo1','titulo2','titulo3','titulo4',
+    'codigoCliente','dataInicialPrevista','dataEmissaoPrevista'];
+  const rows = exportData.map(r => [
+    r.id, r.indice_ne||'', r.os_etapa||'', r.num_pranchas||'', r.area_sigla||'',
+    r.tipo_documento_sigla||'','01',r.seq3||'','A4',
+    `${(r.municipio||'').trim()} - Sistema de Esgotamento Sanitário`,
+    r.nivel_projeto||'',r.titulo3||'',r.titulo4||'',r.nomenclatura_corsan||'',today,emissao
+  ]);
+  const tsv = [headers,...rows].map(r=>r.join('\t')).join('\n');
+  navigator.clipboard.writeText(tsv).then(()=>toast('Tabela copiada!','success'));
+}
+
+// ══════════════════════════════════════════
+//  NAVIGATION
+// ══════════════════════════════════════════
+function showView(name) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('view-' + name).classList.add('active');
+  document.getElementById('nav-' + name).classList.add('active');
+  if(name === 'exportar') loadExportData();
+}
+
+// ══════════════════════════════════════════
+//  UTILS
+// ══════════════════════════════════════════
+function showLoading(show) {
+  document.getElementById('loadingOverlay').classList.toggle('show', show);
+}
+
+function toast(msg, type='') {
+  const div = document.createElement('div');
+  div.className = 'toast-msg ' + type;
+  div.textContent = msg;
+  document.getElementById('toast').appendChild(div);
+  setTimeout(() => div.remove(), 3500);
+}
+</script>
+</body>
+</html>
